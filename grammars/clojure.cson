@@ -40,6 +40,18 @@
     'include': '#comment'
   }
   {
+    'include': '#sexp-comment'
+  }
+  {
+    'include': '#map-comment'
+  }
+  {
+    'include': '#vector-comment'
+  }
+  {
+    'include': '#symbol-comment'
+  }
+  {
     'include': '#shebang-comment'
   }
   {
@@ -94,6 +106,99 @@
         'name': 'punctuation.definition.comment.clojure'
     'end': '$'
     'name': 'comment.line.semicolon.clojure'
+  'inner-sexp-comment':
+    'begin': '\\('
+    'end': '\\)'
+    'name': 'comment.expression.clojure'
+    'patterns': [
+      {
+        'include': '#inner-sexp-comment'
+      }
+      {
+        'include': '#inner-map-comment'
+      }
+      {
+        'include': '#inner-vector-comment'
+      }
+    ]
+  'inner-map-comment':
+    'begin': '\\{'
+    'end': '\\}'
+    'name': 'comment.punctuation.expression.clojure'
+    'patterns': [
+      {
+        'include': '#inner-sexp-comment'
+      }
+      {
+        'include': '#inner-map-comment'
+      }
+      {
+        'include': '#inner-vector-comment'
+      }
+    ]
+  'inner-vector-comment':
+    'begin': '\\['
+    'end': '\\]'
+    'name': 'comment.punctuation.expression.clojure'
+    'patterns': [
+      {
+        'include': '#inner-sexp-comment'
+      }
+      {
+        'include': '#inner-map-comment'
+      }
+      {
+        'include': '#inner-vector-comment'
+      }
+    ]
+  'sexp-comment':
+    'begin': '#_\\('
+    'end': '\\)'
+    'name': 'comment.punctuation.expression.clojure'
+    'patterns': [
+      {
+        'include': '#inner-sexp-comment'
+      }
+      {
+        'include': '#inner-map-comment'
+      }
+      {
+        'include': '#inner-vector-comment'
+      }
+    ]
+  'vector-comment':
+    'begin': '#_\\['
+    'end': '\\]'
+    'name': 'comment.punctuation.vector.clojure'
+    'patterns': [
+      {
+        'include': '#inner-sexp-comment'
+      }
+      {
+        'include': '#inner-map-comment'
+      }
+      {
+        'include': '#inner-vector-comment'
+      }
+    ]
+  'map-comment':
+    'begin': '#_\\{'
+    'end': '\\}'
+    'name': 'comment.punctuation.expression.clojure'
+    'patterns': [
+      {
+        'include': '#inner-sexp-comment'
+      }
+      {
+        'include': '#inner-map-comment'
+      }
+      {
+        'include': '#inner-vector-comment'
+      }
+    ]
+  'symbol-comment':
+    'match': '#_[\\w._:+=><!?*#&$|%-]*'
+    'name': 'comment.punctuation.expression.clojure'
   'constants':
     'patterns': [
       {
@@ -141,12 +246,12 @@
       }
     ]
   'keyword':
-    'match': '(?<=(\\s|\\(|\\[|\\{)):[a-zA-Z0-9\\#\\.\\-\\_\\:\\+\\=\\>\\<\\/\\!\\?\\*]+(?=(\\s|\\)|\\]|\\}|\\,))'
+    'match': '(^|(?<=(\\s|\\(|\\[|\\{|\\)|\\]|\\}|\\,))):[a-zA-Z0-9#._:+=></!?*&$|%-]+(?=(\\s|\\)|\\]|\\}|\\,))'
     'name': 'constant.keyword.clojure'
   'keyfn':
     'patterns': [
       {
-        'match': '(?<=(\\s|\\(|\\[|\\{))(if(-[-a-z\\?]*)?|when(-[-a-z]*)?|for(-[-a-z]*)?|cond|do|let(-[-a-z\\?]*)?|binding|loop|recur|fn|throw[a-z\\-]*|try|catch|finally|([a-z]*case))(?=(\\s|\\)|\\]|\\}))'
+        'match': '(?<=(\\s|\\(|\\[|\\{))(if(-[-a-z?]*)?|when(-[-a-z]*)?|for(-[-a-z]*)?|cond|do|let(-[-a-z?]*)?|binding|loop|recur|fn|throw[a-z-]*|try|catch|finally|([a-z]*case))(?=(\\s|\\)|\\]|\\}))'
         'name': 'storage.control.clojure'
       }
       {
@@ -155,7 +260,7 @@
       }
     ]
   'dynamic-variables':
-    'match': '\\*[\\w\\.\\-\\_\\:\\+\\=\\>\\<\\!\\?\\d]+\\*'
+    'match': '\\*[\\w._:+=><!?#&$|%-]+\\*'
     'name': 'meta.symbol.dynamic.clojure'
   'map':
     'begin': '(\\{)'
@@ -279,26 +384,26 @@
     'patterns': [
       {
         # ns, declare and everything that starts with def* or namespace/def*
-        'begin': '(?<=\\()(ns|declare|def[\\w\\d._:+=><!?*-]*|[\\w._:+=><!?*-][\\w\\d._:+=><!?*-]*/def[\\w\\d._:+=><!?*-]*)\\s+'
+        'begin': '(?<=\\()(ns|declare|def[\\w._:+=><!?*-]*|[a-zA-Z._:+=><!?*-][\\w._:+=><!?*-]*/def[\\w._:+=><!?*-]*)\\s+'
         'beginCaptures':
           '1':
             'name': 'keyword.control.clojure'
         'end': '(?=\\))'
         'name': 'meta.definition.global.clojure'
         'patterns': [
-          {
-            # there may be some metadata before an actual definition
-            'include': '#metadata'
-          }
-          { # dynamic variables are rendered diferently
-            'include': '#dynamic-variables'
-          }
-          {
-            # recognizing a symbol as being defined here
-            # copied and pasted from #symbol, screw it
-            'match': '([\\w\\.\\-\\_\\:\\+\\=\\>\\<\\!\\?\\*][\\w\\.\\-\\_\\:\\+\\=\\>\\<\\!\\?\\*\\d]+)'
-            'name': 'entity.global.clojure'
-          }
+          # {
+          #   # there may be some metadata before an actual definition
+          #   'include': '#metadata'
+          # }
+          # { # dynamic variables are rendered diferently
+          #   'include': '#dynamic-variables'
+          # }
+          # {
+          #   # recognizing a symbol as being defined here
+          #   # copied and pasted from #symbol, screw it
+          #   'match': '([\\w\\.\\-\\_\\:\\+\\=\\>\\<\\!\\?\\*\\&\\$\\|\\%][\\w\\.\\-\\_\\:\\+\\=\\>\\<\\!\\?\\*\\d\\#\\&\\$\\|\\%]+)'
+          #   'name': 'entity.global.clojure'
+          # }
           {
             'include': '$self'
           }
@@ -365,7 +470,7 @@
     'patterns': [
       { # copied from #symbol, plus a / at the end. Matches the "app/" part of
         # "app/*config*"
-        'match': '([\\w\\.\\-\\_\\:\\+\\=\\>\\<\\!\\?\\*][\\w\\.\\-\\_\\:\\+\\=\\>\\<\\!\\?\\*\\d]+)/'
+        'match': '([a-zA-Z._:+=><!?*&$|%-][\\w._:+=><!?*&$|%#-]+)/'
         'captures':
           '1':
             'name': 'meta.symbol.namespace.clojure'
@@ -374,12 +479,12 @@
   'symbol':
     'patterns': [
       {
-        'match': '([\\w\\.\\-\\_\\:\\+\\=\\>\\<\\!\\?\\*][\\w\\.\\-\\_\\:\\+\\=\\>\\<\\!\\?\\*\\d]+)'
+        'match': '([a-zA-Z._:+=><!?*&$|%-][\\w._:+=><!?*&$|%#-]+)'
         'name': 'meta.symbol.clojure'
       }
     ]
   'var':
-    'match': '(?<=(\\s|\\(|\\[|\\{)\\#)\'[a-zA-Z0-9\\.\\-\\_\\:\\+\\=\\>\\<\\/\\!\\?\\*]+(?=(\\s|\\)|\\]|\\}))'
+    'match': '(?<=(\\s|\\(|\\[|\\{)#)\'[a-zA-Z0-9._:+=></!?*&$|%-]+(?=(\\s|\\)|\\]|\\}))'
     'name': 'meta.var.clojure'
   'vector':
     'begin': '(\\[)'
