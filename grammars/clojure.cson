@@ -384,59 +384,27 @@
     'patterns': [
       {
         # ns, declare and everything that starts with def* or namespace/def*
-        'begin': '(?<=\\()(ns|declare|def[\\w._:+=><!?*-]*|[a-zA-Z._:+=><!?*-][\\w._:+=><!?*-]*/def[\\w._:+=><!?*-]*)\\s+'
+        'begin': '(?<=\\()(ns|declare|def[\\w._:+=><!?*-]*|[a-zA-Z._:+=><!?*-][\\w._:+=><!?*-]*/def[\\w._:+=><!?*-]*)\\s+([a-zA-Z0-9#._:+=></!?*&$|%-]*)'
         'beginCaptures':
           '1':
             'name': 'keyword.control.clojure'
+          '2':
+            'name': 'meta.definition.global.clojure'
         'end': '(?=\\))'
-        'name': 'meta.definition.global.clojure'
+        'name': 'entity.name.function.definition.global.clojure'
         'patterns': [
-          # {
-          #   # there may be some metadata before an actual definition
-          #   'include': '#metadata'
-          # }
-          # { # dynamic variables are rendered diferently
-          #   'include': '#dynamic-variables'
-          # }
-          # {
-          #   # recognizing a symbol as being defined here
-          #   # copied and pasted from #symbol, screw it
-          #   'match': '([\\w\\.\\-\\_\\:\\+\\=\\>\\<\\!\\?\\*\\&\\$\\|\\%][\\w\\.\\-\\_\\:\\+\\=\\>\\<\\!\\?\\*\\d\\#\\&\\$\\|\\%]+)'
-          #   'name': 'entity.global.clojure'
-          # }
           {
             'include': '$self'
           }
         ]
       }
       {
-        'include': '#keyfn'
-      }
-      {
-        'include': '#constants'
-      }
-      {
-        'include': '#vector'
-      }
-      {
-        'include': '#map'
-      }
-      {
-        'include': '#set'
-      }
-      {
-        'include': '#sexp'
-      }
-      {
-        'match': '(?<=\\()(.+?)(?=\\s|\\))'
+        'match': '(?<=\\()((?:#_[a-zA-Z0-9#._:+=></!?*&$|%-]+[\\s,])*)([a-zA-Z._:+=></!?*&$|%-][a-zA-Z0-9#._:+=></!?*&$|%-]*)'
         'captures':
           '1':
+            'name': 'comment.punctuation.expression.clojure'
+          '2':
             'name': 'entity.name.function.clojure'
-        'patterns': [
-          {
-            'include': '$self'
-          }
-        ]
       }
       {
         'include': '$self'
