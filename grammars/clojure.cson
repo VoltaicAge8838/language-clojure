@@ -384,14 +384,14 @@
     'patterns': [
       {
         # ns, declare and everything that starts with def* or namespace/def*
-        'begin': '(?<=\\()(ns|declare|def[\\w._:+=><!?*-]*|[a-zA-Z._:+=><!?*-][\\w._:+=><!?*-]*/def[\\w._:+=><!?*-]*)\\s+([a-zA-Z0-9#._:+=></!?*&$|%-]*)'
+        'begin': '(?<=\\()(ns|declare|def[\\w._:+=><!?*-]*|[a-zA-Z._:+=><!?*-][\\w._:+=><!?*-]*/def[\\w._:+=><!?*-]*)\\s+([a-zA-Z._+=></!?*&$|%-][a-zA-Z0-9#._:+=></!?*&$|%-]*)'
         'beginCaptures':
           '1':
             'name': 'keyword.control.clojure'
           '2':
-            'name': 'meta.definition.global.clojure'
+            'name': 'entity.name.function.definition.global.clojure'
         'end': '(?=\\))'
-        'name': 'entity.name.function.definition.global.clojure'
+        'name': 'meta.definition.global.clojure'
         'patterns': [
           {
             'include': '$self'
@@ -399,7 +399,7 @@
         ]
       }
       {
-        'match': '(?<=\\()((?:#_[a-zA-Z0-9#._:+=></!?*&$|%-]+[\\s,])*)([a-zA-Z._:+=></!?*&$|%-][a-zA-Z0-9#._:+=></!?*&$|%-]*)'
+        'match': '(?<=\\()((?:#_[a-zA-Z0-9#._:+=></!?*&$|%-]+[\\s,])*)([a-zA-Z._+=></!?*&$|%-][a-zA-Z0-9#._:+=></!?*&$|%-]*)'
         'captures':
           '1':
             'name': 'comment.punctuation.expression.clojure'
