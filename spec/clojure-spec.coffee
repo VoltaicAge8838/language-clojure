@@ -3,7 +3,7 @@ describe "Clojure grammar", ->
 
   beforeEach ->
     waitsForPromise ->
-      atom.packages.activatePackage("language-clojure")
+      atom.packages.activatePackage("language-clojure-custom")
 
     runs ->
       grammar = atom.grammars.grammarForScopeName("source.clojure")
@@ -109,7 +109,7 @@ describe "Clojure grammar", ->
     expect(tokens[5]).toEqual value: ":Öπ", scopes: ["source.clojure", "meta.expression.clojure", "meta.definition.global.clojure", "constant.keyword.clojure"]
 
   it "tokenizes keyfns (keyword control)", ->
-    keyfns = ["declare", "declare-", "ns", "in-ns", "import", "use", "require", "load", "compile", "def", "defn", "defn-", "defmacro", "defåπç"]
+    keyfns = ["declare", "declare-", "ns", "in-ns", "import", "use", "require", "load", "compile"]
 
     for keyfn in keyfns
       {tokens} = grammar.tokenizeLine "(#{keyfn})"
@@ -123,12 +123,20 @@ describe "Clojure grammar", ->
       expect(tokens[1]).toEqual value: keyfn, scopes: ["source.clojure", "meta.expression.clojure", "storage.control.clojure"]
 
   it "tokenizes global definitions", ->
-    macros = ["ns", "declare", "def", "defn", "defn-", "defroutes", "compojure/defroutes", "rum.core/defc123-", "some.nested-ns/def-nested->symbol!?*", "def+!.?abc8:<>", "ns/def+!.?abc8:<>", "ns/defåÄÖπç"]
+    macros = ["ns", "declare"]
+
+    for macro in macros
+      {tokens} = grammar.tokenizeLine "(#{macro} foo 'bar)"
+      expect(tokens[1]).toEqual value: macro, scopes: ["source.clojure", "meta.expression.clojure", "keyword.control.clojure"]
+      expect(tokens[3]).toEqual value: "foo", scopes: ["source.clojure", "meta.expression.clojure", "meta.symbol.clojure"]
+
+  it "tokenizes function definitions", ->
+    macros = ["def", "defn", "defn-", "defmacro", "defåπç", "defroutes", "compojure/defroutes", "rum.core/defc123-", "some.nested-ns/def-nested->symbol!?*", "def+!.?abc8:<>", "ns/def+!.?abc8:<>", "ns/defåÄÖπç"]
 
     for macro in macros
       {tokens} = grammar.tokenizeLine "(#{macro} foo 'bar)"
       expect(tokens[1]).toEqual value: macro, scopes: ["source.clojure", "meta.expression.clojure", "meta.definition.global.clojure", "keyword.control.clojure"]
-      expect(tokens[3]).toEqual value: "foo", scopes: ["source.clojure", "meta.expression.clojure", "meta.definition.global.clojure", "entity.global.clojure"]
+      expect(tokens[3]).toEqual value: "foo", scopes: ["source.clojure", "meta.expression.clojure", "meta.definition.global.clojure", "entity.name.function.definition.global.clojure"]
 
   it "tokenizes dynamic variables", ->
     mutables = ["*ns*", "*foo-bar*", "*åÄÖπç*"]

@@ -246,16 +246,16 @@
       }
     ]
   'keyword':
-    'match': '(^|(?<=(\\s|\\(|\\[|\\{|\\)|\\]|\\}|\\,))):[\\w#.:+=></!?*&$|%-]+(?=(\\s|\\)|\\]|\\}|\\,))'
+    'match': '(^|(?<=(\\s|\\(|\\[|\\{|\\)|\\]|\\}|\\,))):[\\w#.:+=></!?*&$|%-]+(?=(\\s|\\(|\\[|\\{|\\)|\\]|\\}|\\,))'
     'name': 'constant.keyword.clojure'
   'keyfn':
     'patterns': [
       {
-        'match': '(?<=(\\s|\\(|\\[|\\{))(if(-[-\\p{Ll}\\?]*)?|when(-[-\\p{Ll}]*)?|for(-[-\\p{Ll}]*)?|cond|do|let(-[-\\p{Ll}\\?]*)?|binding|loop|recur|fn|throw[\\p{Ll}\\-]*|try|catch|finally|([\\p{Ll}]*case))(?=(\\s|\\)|\\]|\\}))'
+        'match': '(?<=(\\s|\\(|\\[|\\{))(if(-[-\\p{Ll}\\?]*)?|when(-[-\\p{Ll}]*)?|for(-[-\\p{Ll}]*)?|cond|do|let(-[-\\p{Ll}\\?]*)?|binding|loop|recur|fn|throw[\\p{Ll}\\-]*|try|catch|finally|([\\p{Ll}]*case))(?=(\\s|\\(|\\[|\\{|\\)|\\]|\\}|\\,))'
         'name': 'storage.control.clojure'
       }
       {
-        'match': '(?<=(\\s|\\(|\\[|\\{))(declare-?|(in-)?ns|import|use|require|load|compile|(def[\\p{Ll}\\-]*))(?=(\\s|\\)|\\]|\\}))'
+        'match': '(?<=(\\s|\\(|\\[|\\{))(declare-?|(in-)?ns|import|use|require|load|compile)(?=(\\s|\\(|\\[|\\{|\\)|\\]|\\}|\\,))'
         'name': 'keyword.control.clojure'
       }
     ]
@@ -383,8 +383,11 @@
     'name': 'meta.expression.clojure'
     'patterns': [
       {
-        # ns, declare and everything that starts with def* or namespace/def*
-        'begin': '(?<=\\()(ns|declare|(?:[a-zA-Z._:+=><!?*-][\\w._:+=><!?*-]*/)?def[\\w._:+=><!?*-]*)(?:\\s+\\^(?:[\\w._:+=><!?*-]*|\\{[^}]*\\}))?\\s+([a-zA-Z._+=></!?*&$|%-][a-zA-Z0-9#._:+=></!?*&$|%-]*)'
+        'include': '#keyfn'
+      }
+      {
+        # declare and everything that starts with def* or namespace/def*
+        'begin': '(?<=\\()(declare|(?:[\\p{L}._:+=><!?*-][\\p{L}\\p{N}._:+=><!?*-]*/)?def[\\p{L}\\p{N}._:+=></!?*&$|%-]*)(?:\\s+\\^(?:[\\w._:+=><!?*-]*|\\{[^}]*\\}))?\\s+([a-zA-Z._+=></!?*&$|%-][a-zA-Z0-9#._:+=></!?*&$|%-]*)'
         'beginCaptures':
           '1':
             'name': 'keyword.control.clojure'
@@ -401,18 +404,12 @@
             'include': '#dynamic-variables'
           }
           {
-            # recognizing a symbol as being defined here
-            # copied and pasted from #symbol, screw it
-            'match': '([\\p{L}\\.\\-\\_\\+\\=\\>\\<\\!\\?\\*][\\w\\.\\-\\_\\:\\+\\=\\>\\<\\!\\?\\*\\d]*)'
-            'name': 'entity.global.clojure'
-          }
-          {
             'include': '$self'
           }
         ]
       }
       {
-        'match': '(?<=\\()((?:#_[a-zA-Z0-9#._:+=></!?*&$|%-]+[\\s,])*)([a-zA-Z._+=></!?*&$|%-][a-zA-Z0-9#._:+=></!?*&$|%-]*)'
+        'match': '(?<=\\()((?:#_[\\p{L}\\p{N}#._:+=></!?*&$|%-]+[\\s,])*)([\\p{L}._+=></!?*&$|%-][\\p{L}\\p{N}#._:+=></!?*&$|%-]*)'
         'captures':
           '1':
             'name': 'comment.punctuation.expression.clojure'
